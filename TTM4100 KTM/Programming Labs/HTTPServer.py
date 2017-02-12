@@ -43,7 +43,7 @@ while True:
 		
 		# Because the extracted path of the HTTP request includes 
 		# a character '\', we read the path from the second character 
-		f = open(filepath[1:])
+		f = open(filepath[1:]) 
 		
 		# Read the file "f" and store the entire content of the requested file in a temporary buffer
 		outputdata = f.read() # FILL IN START		# FILL IN END
@@ -51,7 +51,7 @@ while True:
 		# Send the HTTP response header line to the connection socket
 		# Format: "HTTP/1.1 *code-for-successful-request*\r\n\r\n"
 		# FILL IN START		
-		connectionSocket.send("HTTP/1.1 10.2.1 200 OK \r\n\r\n")
+		connectionSocket.send("HTTP/1.1 200\r\n\r\n")
  		# FILL IN END
  		
 		# Send the content of the requested file to the connection socket
