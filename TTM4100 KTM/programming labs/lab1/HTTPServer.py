@@ -2,7 +2,8 @@
 # You should be aware of your additional code for compatibility of the Python version of your choice.
 
 # Import socket module
-from socket import *    
+from socket import *
+
 
 # Create a TCP server socket
 #(AF_INET is used for IPv4 protocols)
@@ -36,7 +37,7 @@ while True:
 	try:
 		# Receives the request message from the client
 		message = connectionSocket.recv(1024) # FILL IN START		# FILL IN END
-		
+		message.decode('utf-8')
 		# Extract the path of the requested object from the message
 		# The path is the second part of HTTP header, identified by [1]
 		filepath = message.split()[1]
@@ -51,13 +52,13 @@ while True:
 		# Send the HTTP response header line to the connection socket
 		# Format: "HTTP/1.1 *code-for-successful-request*\r\n\r\n"
 		# FILL IN START		
-		connectionSocket.send("HTTP/1.1 200\r\n\r\n")
+		connectionSocket.send("HTTP/1.1 200\r\n\r\n".encode('utf-8'))
  		# FILL IN END
  		
 		# Send the content of the requested file to the connection socket
 		for i in range(0, len(outputdata)):  
-			connectionSocket.send(outputdata[i])
-		connectionSocket.send("\r\n")
+			connectionSocket.send(outputdata[i].encode('utf-8'))
+		connectionSocket.send("\r\n".encode('utf-8'))
 		
 		
 
@@ -70,11 +71,11 @@ while True:
 		# FILL IN START		
 
  		# FILL IN END
-		connectionSocket.send("<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n")
+		connectionSocket.send("<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8'))
 		
 		# Close the client connection socket
 		# FILL IN START		
-		
+		connectionSocket.close()
  		# FILL IN END
 
 serverSocket.close()  
