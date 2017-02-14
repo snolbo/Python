@@ -13,7 +13,7 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 # FILL IN START
 
 # Assign a port number
-serverPort = 6789 # does not really matter what this is as long as i know what port to connect to, default weill be 80 for HTTP requests
+serverPort = 6779 # does not really matter what this is as long as i know what port to connect to, default weill be 80 for HTTP requests
 
 # Bind the socket to server address and server port
 serverSocket.bind(('', serverPort))
@@ -40,8 +40,11 @@ while True:
 		message.decode('utf-8')
 		# Extract the path of the requested object from the message
 		# The path is the second part of HTTP header, identified by [1]
-		filepath = message.split()[1]
 		
+		#print(message)
+
+		filepath = message.split()[1]
+		print(filepath)
 		# Because the extracted path of the HTTP request includes 
 		# a character '\', we read the path from the second character 
 		f = open(filepath[1:]) 

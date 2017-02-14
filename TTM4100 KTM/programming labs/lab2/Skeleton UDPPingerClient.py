@@ -3,11 +3,10 @@
 
 import time
 from socket import *
-from builtins import str
 
 # Get the server hostname and port as command line arguments                    
 host = 'localhost'# FILL IN START		# FILL IN END
-port = 12000# FILL IN START		# FILL IN END
+port = 12004# FILL IN START		# FILL IN END
 timeout = 1 # in seconds
  
 # Create UDP client socket
@@ -16,7 +15,6 @@ timeout = 1 # in seconds
 # Note the second parameter is NOT SOCK_STREAM
 # but the corresponding to UDP
 clientSocket = socket(AF_INET, SOCK_DGRAM)
-clientSocket.bind((host,port))
 # Set socket timeout as 1 second
 clientSocket.settimeout(timeout)
 
@@ -47,7 +45,7 @@ while ptime < 10:
         RTT.append(time.time() - sendTime)
     # Display the server response as an output
         response.decode('utf-8')
-        print(response)
+        print("Client: " +  response)
     # Round trip time is the difference between sent and received time
         #fantastic mathematics! negative times
         
@@ -55,10 +53,12 @@ while ptime < 10:
     except:
         # Server does not respond
 	# Assume the packet is lost
-        print("Request timed out.")
+        print("Client : Request timed out.")
         continue
 
 # Close the client socket
 clientSocket.close()
-print(RTT)
- 
+print("Client: "  + str(RTT))
+print("min RTT: " + str(min(RTT)))
+print("max RTT: " + str(max(RTT)))
+print("avg RTT: " + str(sum(RTT)/len(RTT)))

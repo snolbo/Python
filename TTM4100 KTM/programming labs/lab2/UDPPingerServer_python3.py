@@ -9,7 +9,7 @@ from socket import *
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
 # Assign IP address and port number to socket
-serverSocket.bind(("", 12000))
+serverSocket.bind(("", 12004))
 
 print ("Ready to receive Pings!!");
 
@@ -22,7 +22,9 @@ while True:
 	message, address = serverSocket.recvfrom(1024)
 	
 	# Capitalize the message from the client
-	messageS = message.decode('utf-8').upper()
+	message.decode('utf-8')
+	print (message)
+	messageS = message.upper()
 
 	# If rand is less is than 4, we consider the packet lost and do not respond
 	if rand < 4:
@@ -30,4 +32,4 @@ while True:
 
 	# Otherwise, the server responds
 	serverSocket.sendto(messageS.encode('utf-8'), address)
-	print (messageS)
+	
