@@ -19,7 +19,7 @@ while (time.time() - startTime < 0.5):
 	response = clientSocket.recv(1024)
 	response.decode('utf-8')
 	string+=response
-
+#srkiver random commentar
 
 
 print(string)
