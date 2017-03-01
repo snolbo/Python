@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
-from Client.ClientMessageParser import ClientMessageParser
+import ClientMessageParser
 
 class MessageReceiver(Thread):
     """
@@ -19,7 +19,7 @@ class MessageReceiver(Thread):
 
         # TODO: Finish initialization of MessageReceiver
         self.client = client
-        self.parser = ClientMessageParser()
+        self.parser = ClientMessageParser.ClientMessageParser()
 
     def run(self):
         # TODO: Make MessageReceiver receive and handle payloads

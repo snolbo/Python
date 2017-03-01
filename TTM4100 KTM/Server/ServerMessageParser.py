@@ -1,5 +1,4 @@
 import json
-from Server.Server import ClientHandler
 import time
 
 class ServerMessageParser():

@@ -2,8 +2,7 @@
 import socketserver
 import json
 import time
-from Server.ServerMessageParser import ServerMessageParser
-
+import ServerMessageParser
 
 """
 Variables and functions that must be used by all the ClientHandler objects
@@ -13,7 +12,7 @@ must be written here (e.g. a dictionary for connected clients)
 chatRooms = {"main room" : ""}  # holds chatroomName and message history
 usersInRooms = {}
 connectedUsers = [] # holds userName and connection
-parser = ServerMessageParser()
+parser = ServerMessageParser.ServerMessageParser()
 
 def broadcast_message():
     pass
@@ -47,7 +46,11 @@ class ClientHandler(socketserver.BaseRequestHandler):
         self.connection.close()
     
     def send_broadcast_message(self):
-        self.connection.
+       # self.connection.
+       pass
+       
+       
+       
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """
     This class is present so that each client connected will be ran as a own

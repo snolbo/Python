@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import socket
-from Client.MessageReceiver import MessageReceiver
+import MessageReceiver
 import json
 
 class Client:
@@ -16,6 +16,8 @@ class Client:
 
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.host = host
+        self.server_port = server_port
         # TODO: Finish init process with necessary code
         self.run()
 
@@ -23,7 +25,7 @@ class Client:
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
         print("Connected to server")
-        MessageReceiver(self, self.connection).start()
+        MessageReceiver.MessageReceiver(self, self.connection).start()
         while True: 
             self.read_and_send_data()
             
