@@ -14,8 +14,6 @@ class ClientMessageParser():
         }
 
     def parse(self, payload):
-        payload = json.loads(payload) # decode the JSON object
-
         if payload["response"] in self.possible_responses:
             return self.possible_responses[payload["response"]](payload) # calls the corrent function in dict with payload argument
         else:
@@ -53,24 +51,25 @@ class ClientMessageParser():
 # dict2 = json.loads(dictString)
 # print(dict2)
 # print(dict2["key2"])
-# print("h" == 'h')
-#  
+#   
+#===============================================================================
+#===============================================================================
 # print("request:","  ", end ="")
 # string = input()
 # print("content:","  ", end ="")
 # string2 = input()
 # print(type(string2) == int)
-#  
+#   
 # data = input()
 # print(data)
 # data = data.partition(" ")
 # print(data)
 # data = [data[0], data[2]]
 # print(data)
+# 
+# a = time.strftime('%Y/%m/%d %H:%M:%S')
+# print(a)
+# string = "hei"
+# split = string.partition(" ")
+# print(split)
 #===============================================================================
-
-a = time.strftime('%Y/%m/%d %H:%M:%S')
-print(a)
-string = "hei"
-split = string.partition(" ")
-print(split)

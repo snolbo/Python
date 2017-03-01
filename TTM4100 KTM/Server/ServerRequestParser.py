@@ -1,8 +1,8 @@
-import json
 import time
 
-class ServerMessageParser():
-    def __init__(self):
+class ServerRequestParser():
+    def __init__(self, server):
+        self.server = server
         self.possible_requests = {
             "login" : self.login_user,
             "logout" : self.logout_user,
@@ -13,17 +13,22 @@ class ServerMessageParser():
         }
     
     def parse(self, payload, client_handler):
-        payload = json.loads(payload) # payload is not dict
         if(payload["request"] in self.possible_requests):
-            return self.possible_requests(payload["request"])(payload, client_handler) # calls correct function with payload argument
+            
+            print("---request receives IS valid")
+            
+            return self.possible_requests[payload["request"]](payload, client_handler) # calls correct function with payload argument
         else:
+            
+            print("---request received is NOT valid")
+            
             return {"timestamp" : time.strftime('%Y/%m/%d %H:%M:%S'),
                     "sender" : "server",
                     "response" : "error",
                     "content" : '"'  + payload["request"] + '" is not a valid request' }
         
     def login_user(self, payload, client_handler):
-        if(payload["content"] in connectedUsers or payload["content"] == "server"): # username alrady taken
+        if(payload["content"] in self.server.connectedUsers or payload["content"] == "server"): # username alrady taken
             return {"timestamp" : time.strftime('%Y/%m/%d %H:%M:%S'),
                     "sender" : "server",
                     "response" : "error",
@@ -40,7 +45,7 @@ class ServerMessageParser():
                 "content" : "you already have a username for this session" }
         else:
             client_handler.username = payload["content"]
-            connectedUsers.append(client_handler.username)
+            self.server.connectedUsers.append(client_handler.username)
             return {"timestamp" : time.strftime('%Y/%m/%d %H:%M:%S'),
                 "sender" : "server",
                 "response" : "info",
@@ -48,8 +53,8 @@ class ServerMessageParser():
             
     
     def logout_user(self,payload, client_handler):
-        if(client_handler.username in connectedUsers):
-            connectedUsers.remove(client_handler.username)
+        if(client_handler.username in self.server.connectedUsers):
+            self.server.connectedUsers.remove(client_handler.username)
             return {"timestamp" : time.strftime('%Y/%m/%d %H:%M:%S'),
                 "sender" : "server",
                 "response" : "info",

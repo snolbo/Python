@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
 import ClientMessageParser
+import json
 
 class MessageReceiver(Thread):
     """
@@ -13,7 +14,7 @@ class MessageReceiver(Thread):
         """
         This method is executed when creating a new MessageReceiver object
         """
-
+        Thread.__init__(self)
         # Flag to run thread as a deamon
         self.daemon = True
 
@@ -24,6 +25,15 @@ class MessageReceiver(Thread):
     def run(self):
         # TODO: Make MessageReceiver receive and handle payloads
         while True:
-            payload = self.client.connection.recv(4096).decode('utf-8')
+            payload = self.client.connection.recv(4096)
+            payload = payload.decode()
+            payload = json.loads(payload)
+            print("---payload receives from server:")
+            print(payload)
             parsed_message = self.parser.parse(payload)
+            print("---parsed message for user:")
+            print(parsed_message)
+            
+            print("---client.receive_message: (let client print message)")
             self.client.receive_message(parsed_message)
+            print()
