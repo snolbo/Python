@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
-import SocketServer
+import socketserver
+import json
+import time
+from Server.ServerMessageParser import ServerMessageParser
+
 
 """
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
-class ClientHandler(SocketServer.BaseRequestHandler):
+chatRooms = {"main room" : ""}  # holds chatroomName and message history
+usersInRooms = {}
+connectedUsers = [] # holds userName and connection
+parser = ServerMessageParser()
+
+def broadcast_message():
+    pass
+
+
+class ClientHandler(socketserver.BaseRequestHandler):
     """
     This is the ClientHandler class. Everytime a new client connects to the
     server, a new ClientHandler object will be created. This class represents
@@ -18,18 +31,24 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         """
         This method handles the connection between a client and the server.
         """
+        self.username = ""
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
 
         # Loop that listens for messages from the client
         while True:
-            received_string = self.connection.recv(4096)
+            payload = self.connection.recv(4096).decode('utf-8')
+            parser.parse(payload, self)
             
             # TODO: Add handling of received payload from client
 
-
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    def disconnet(self):
+        self.connection.close()
+    
+    def send_broadcast_message(self):
+        self.connection.
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """
     This class is present so that each client connected will be ran as a own
     thread. In that way, all clients will be served by the server.

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
+from Client.ClientMessageParser import ClientMessageParser
 
 class MessageReceiver(Thread):
     """
@@ -8,7 +9,7 @@ class MessageReceiver(Thread):
     the chat client to both send and receive messages at the same time
     """
 
-    def __init__(self, client, connection):
+    def __init__(self, client):
         """
         This method is executed when creating a new MessageReceiver object
         """
@@ -17,7 +18,12 @@ class MessageReceiver(Thread):
         self.daemon = True
 
         # TODO: Finish initialization of MessageReceiver
+        self.client = client
+        self.parser = ClientMessageParser()
 
     def run(self):
         # TODO: Make MessageReceiver receive and handle payloads
-        pass
+        while True:
+            payload = self.client.connection.recv(4096).decode('utf-8')
+            parsed_message = self.parser.parse(payload)
+            self.client.receive_message(parsed_message)
