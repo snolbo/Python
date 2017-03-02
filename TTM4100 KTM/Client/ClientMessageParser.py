@@ -6,10 +6,10 @@ class ClientMessageParser():
     def __init__(self):
 
         self.possible_responses = {
-            "error": self.parse_error,
+            "error": self.parse_error, 
             "info": self.parse_info,
             "message": self.parse_message,
-            "history": self.parse_history
+            "history": self.parse_history # done
 	    # More key:values pairs are optional	
         }
 
@@ -20,7 +20,6 @@ class ClientMessageParser():
             # Response not sopported, tell client that response is not supported TODO
             print('"'+ payload["response"] + '"' + " is not a response that is supported")
             
-
     def parse_error(self, payload):
         return "Error message recieved from server: " + payload["content"]
     
@@ -30,46 +29,17 @@ class ClientMessageParser():
     def parse_message(self, payload):
         return payload["sender"] + ": " + payload["content"]
         
-    
     def parse_history(self, payload):
+        #print("---receives history payload:")
+        #print(payload)
         history_string =""
-        for message_payload in payload["content"]: # for every string in the list
-            message_payload_dict =  json.loads(message_payload) # decode json streing to dict
-            history_string += message_payload_dict["timestamp"] + "  " + message_payload_dict["sender"] + ": " + message_payload_dict["content"] +"\n" # format message time, sender and content
+        content = payload["content"] # gets the dict of dicts
+        #print("---content is dict?:  " + str(type(content) == dict))
+        #print("---length of content: " + str(len(content)))
+        for i in range(0,len(content)): # for all elements in dict, as they are saved with index of message since dicts are nonordered
+            saved_dict = content[str(i)]
+            #print(saved_dict) #prints the dict that is the original sent message
+            history_string += saved_dict["timestamp"] + "    " + saved_dict["sender"] + ": " + saved_dict["content"] + "\n"
         return history_string
     
         # Include more methods for handling optional responses... 
-
-
-
-
-#===============================================================================
-# dict = {"key1" : 1 , "key2" : 2}
-# dictString = json.dumps(dict)
-# print(dictString)
-# print(dict["key1"])
-# dict2 = json.loads(dictString)
-# print(dict2)
-# print(dict2["key2"])
-#   
-#===============================================================================
-#===============================================================================
-# print("request:","  ", end ="")
-# string = input()
-# print("content:","  ", end ="")
-# string2 = input()
-# print(type(string2) == int)
-#   
-# data = input()
-# print(data)
-# data = data.partition(" ")
-# print(data)
-# data = [data[0], data[2]]
-# print(data)
-# 
-# a = time.strftime('%Y/%m/%d %H:%M:%S')
-# print(a)
-# string = "hei"
-# split = string.partition(" ")
-# print(split)
-#===============================================================================

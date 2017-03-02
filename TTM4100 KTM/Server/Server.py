@@ -9,12 +9,6 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
-## TODO    HOW TO PUT THESE VARIABLE TO BE CONTAINED BY SERVER SO THAT I CAN USE THEM FROM ServerMessageParser???????
-chatRooms = {"main room" : ""}  # holds chatroomName and message history
-usersInRooms = {}
-connectedUsers = {} # holds userName and handler
-
-
 def broadcast_message():
     pass
 
@@ -36,33 +30,65 @@ class ClientHandler(socketserver.BaseRequestHandler):
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
+        self.connected = True
+        self.currentRoom = None
+        #self.server.change_handler_to_chatRoom(self,"main room")
+        
+        while self.connected: # Loop that listens for messages from the client while not disconnected
+            try:
+                payload_as_dict = self.recv_one_message() # receives payload as one regardless of how big it is, and returns as a dict 
+                response_as_dict = parser.parse(payload_as_dict, self) # parse the request and return message
+                if(response_as_dict != None): # if the response to the request is None, it should not send a message to Client
+                    self.send_one_message(response_as_dict)
+            except ConnectionResetError: # handle client disconnecting
+                self.handle_disconnected_client()
+            print()
 
-        # Loop that listens for messages from the client
-        while True:
-            payload = self.connection.recv(4096)
+    def recv_one_message(self): # receives request from the client regardless of size, by first receiving a declaring payload with size of request
+        payload = self.connection.recv(4096)
+        payload = payload.decode()
+        payload = json.loads(payload)
+        #print("---received payload:")
+        #print(payload)
+        if(payload["request"] == "recv_size"): # every sent message from client should send a "recv_size" request first
+            payload = self.recv_all(int(payload["content"]))
             payload = payload.decode()
-            payload = json.loads(payload) # payload becomes dict
-            
-            print("---receives payload:")
-            print(payload)
-                        
-            response = parser.parse(payload, self)
-            
-            print("---response sending to client:")
-            print(response)
-            
-            response = json.dumps(response)
-            response = response.encode()
-            
-            self.connection.send(response)
-            
+            payload = json.loads(payload)
+            #print("---payload from client merged together and loaded to dict: ")
+            #print(payload)
+        return payload
 
-    def disconnet(self):
+    def recv_all(self, size):
+        buf = b''
+        while size:
+            newbuf = self.connection.recv(size)
+            if not newbuf : return None
+            buf += newbuf
+            size -= len(newbuf)
+        return buf
+
+    def send_one_message(self, payload_as_dict): # sends a daclaring message telling the size of the incoming payload, then sends the payload
+        #print("---response sending to client:")
+        #print(payload_as_dict)
+        data = json.dumps(payload_as_dict)
+        data = data.encode()
+        length = len(data)
+        declaring_dict = {"timestamp" : time.strftime('%Y/%m/%d %H:%M:%S'), "sender" : "server", "response" : "recv_size", "content" : length}
+        #print("--- declaring dict sending to client:")
+        #print(declaring_dict) 
+        declaring_dict = json.dumps(declaring_dict)
+        declaring_dict = declaring_dict.encode()
+        self.connection.sendall(declaring_dict)
+        self.connection.sendall(data)
+            
+    def handle_disconnected_client(self): # handles disconnectes user by logging handler and username out, then closing socket and ending loop in this thread
+        #print("--- " + self.username + " disconnected from the server. removing username and handler from connectedUsers, reseting username to "", then printing connectedUsers:")
+        parser.parse({"request" : "logout" , "content" : None}, self) # log the clientHandler of the connectedUserslist dont need the return message
         self.connection.close()
-    
-    def send_broadcast_message(self):
-       # self.connection.
-       pass
+        self.connected = False # stop loops receiveing from socket
+        
+        
+
        
        
        
@@ -73,9 +99,27 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
     No alterations are necessary
     """
+    #__slots__=("connectedUsers")
+    connectedUsers = {}
+    chatRoomHistory = {"main room" : [] }  # holds chatroomName and history
+    chatRoomUsers = {"main room" : []} # holds chatroomName and connexted users in room
+    messageHistory = []
     allow_reuse_address = True
+    
 
-
+    #TODO
+    def send_broadcast_message(self, message_dict):
+        for user in self.connectedUsers:
+            self.connectedUsers[user].send_one_message(message_dict)
+            
+    def change_handler_to_chatRoom(self,client_handler, room_name):
+        if(client_handler.currentRoom != room_name):
+            self.chatRoomUsers[client_handler.currentRoom].remove(client_handler)
+            self.chatRoomUsers[room_name].append(client_handler)
+    
+    def remove_handler_from_chatroom(self,client_handler):
+        self.chatRoomUsers[client_handler.currentRoom].remove(client_handler)
+            
 
 if __name__ == "__main__":
     """
@@ -90,5 +134,4 @@ if __name__ == "__main__":
     # Set up and initiate the TCP server
     server = ThreadedTCPServer((HOST, PORT), ClientHandler)
     parser = ServerRequestParser.ServerRequestParser(server)        ## TODO how to add variables in top to server????
-
     server.serve_forever()
