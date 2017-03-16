@@ -39,8 +39,8 @@ class MessageReceiver(Thread):
     def recv_one_message(self):
         payload = self.client.connection.recv(4096)
         payload = payload.decode()
-        payload = json.loads(payload)
         #print("---received payload:")
+        payload = json.loads(payload)
         #print(payload)
         if(payload["response"] == "recv_size"):
             payload = self.recv_all(int(payload["content"]))

@@ -3,6 +3,7 @@ import socketserver
 import json
 import time
 import ServerRequestParser
+import time
 
 """
 Variables and functions that must be used by all the ClientHandler objects
@@ -79,6 +80,7 @@ class ClientHandler(socketserver.BaseRequestHandler):
         declaring_dict = json.dumps(declaring_dict)
         declaring_dict = declaring_dict.encode()
         self.connection.sendall(declaring_dict)
+        time.sleep(0.1)
         self.connection.sendall(data)
             
     def handle_disconnected_client(self): # handles disconnectes user by logging handler and username out, then closing socket and ending loop in this thread
@@ -128,7 +130,7 @@ if __name__ == "__main__":
 
     No alterations are necessary
     """
-    HOST, PORT = 'localhost', 9998
+    HOST, PORT = 'localhost', 9001
     print ('Server running...')
 
     # Set up and initiate the TCP server

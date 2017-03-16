@@ -3,6 +3,7 @@ import socket
 import MessageReceiver
 import json
 import sys
+import time
 
 class Client:
     """
@@ -83,6 +84,7 @@ class Client:
         declaring_dict = json.dumps(declaring_dict)
         declaring_dict = declaring_dict.encode()
         self.connection.sendall(declaring_dict)
+        time.sleep(0.1)
         self.connection.sendall(data)
     # More methods may be needed!
     
@@ -96,4 +98,4 @@ if __name__ == '__main__':
 
     No alterations are necessary
     """
-    client = Client('localhost', 9998)
+    client = Client('localhost', 9001)
